@@ -14,7 +14,8 @@
     "egg-plugin"
   ],
   "dependencies": {
-    "casl": "^1.1.0",
+    "@casl/ability": "^2.5.1",
+    "@casl/mongoose": "^2.2.2",
     "egg-mongoose": "^3.1.1"
   },
   "devDependencies": {
