@@ -6,7 +6,7 @@
  * @property {String} SOME_KEY - some description
  */
 exports.rules = {
-
+  root: 'root'
 };
 
 exports.mongoose = {

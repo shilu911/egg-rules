@@ -1,6 +1,7 @@
 'use strict';
 
 const permittedFieldsOf = require('@casl/ability/extra').permittedFieldsOf;
+const AbilityBuilder = require('@casl/ability').AbilityBuilder;
 
 const actionMappings = {
   GET: 'read',
@@ -85,6 +86,7 @@ async function canDelete(ctx, modelName, id, ability) {
  */
 module.exports = options => {
   return async function(ctx, next) {
+    console.log(ctx.app.config.rules)
     // get current user
     let user = null;
     if (options.getUser) {
@@ -138,18 +140,27 @@ module.exports = options => {
       throw new Error('Cannot get model name.');
     }
 
-    // get rules
-    // check if this role exist
-    if (!ctx.app.rules[role]) {
-      ctx.throw(403, `You are not allowed to ${action} ${modelName}`);
-      return;
+    let ability = null;
+    if (role == ctx.app.config.rules.root) {
+      // if is root, then can do everything
+      ability = AbilityBuilder.define(can => {
+        can('manage', 'all');
+      })
+    } else {
+      // get rules
+      // check if this role exist
+      if (!ctx.app.rules[role]) {
+        ctx.throw(403, `You are not allowed to ${action} ${modelName}`);
+        return;
+      }
+      // check if the rules of the model exist
+      if (!ctx.app.rules[role][modelName]) {
+        ctx.throw(403, `You are not allowed to ${action} ${modelName}`);
+        return;
+      }
+      ability = ctx.app.rules[role][modelName](user);
     }
-    // check if the rules of the model exist
-    if (!ctx.app.rules[role][modelName]) {
-      ctx.throw(403, `You are not allowed to ${action} ${modelName}`);
-      return;
-    }
-    let ability = ctx.app.rules[role][modelName](user);
+
     let can = false;
     if (action == 'read') {
       can = await canRead(ctx, modelName, id, ability);
