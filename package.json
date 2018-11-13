@@ -33,7 +33,7 @@
     "node": ">=8.0.0"
   },
   "scripts": {
-    "test": "npm run lint -- --fix && egg-bin pkgfiles && npm run test-local",
+    "test": "egg-bin pkgfiles && npm run test-local",
     "test-local": "egg-bin test",
     "cov": "egg-bin cov",
     "lint": "eslint .",
@@ -42,6 +42,7 @@
     "autod": "autod"
   },
   "files": [
+    "app",
     "config",
     "app.js"
   ],
